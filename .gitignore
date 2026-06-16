@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+fact_checker.db
+fact_checker.log
+.pytest_cache/
+.mypy_cache/
+dist/
+build/

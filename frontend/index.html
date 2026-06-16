@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VeriNova | AI Fact Checking Assistant</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <div class="app-shell">
+    <header class="product-header">
+      <div class="brand-lockup">
+        <div class="brand-mark">VN</div>
+        <div>
+          <p class="eyebrow">AI Evidence Retrieval System</p>
+          <h1>VeriNova</h1>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="status-chip" id="serverStatus">Connecting</div>
+      </div>
+    </header>
+
+    <main class="dashboard-grid">
+      <aside class="claim-console glass-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Claim Console</p>
+            <h2>Ask VeriNova to verify a claim</h2>
+          </div>
+          <button class="icon-button" id="clearBtn" type="button" title="Reset claim">↺</button>
+        </div>
+
+        <label class="field-label" for="claimInput">Claim or news headline</label>
+        <textarea id="claimInput" rows="9" placeholder="Paste a news headline, policy claim, scientific statement, or social media post..."></textarea>
+        <p id="lastSubmittedClaim" class="source-meta hidden"></p>
+
+        <div class="mode-row">
+          <div class="segmented" role="group" aria-label="Verification mode">
+            <button class="segment active" data-mode="general" type="button">General</button>
+            <button class="segment" data-mode="news" type="button">News</button>
+          </div>
+          <button class="primary-action" id="verifyBtn" type="button">
+            <span class="pulse-dot"></span>
+            Verify Claim
+          </button>
+        </div>
+
+        <section class="suggestion-block">
+          <p class="micro-label">Demo prompts</p>
+          <div class="sample-grid">
+            <button data-sample="The World Health Organization declared COVID-19 a pandemic in 2020." type="button">WHO pandemic</button>
+            <button data-sample="The World Bank has reduced its forecast for global economic growth in 2026 to 2.5%, citing concerns about ongoing conflicts and potential disruptions to energy markets. It warned that growth could fall even further if geopolitical tensions worsen" type="button">World Bank forecast</button>
+            <button data-sample="Scientists Discover Flying Cats in Karachi" type="button">Unsupported headline</button>
+          </div>
+        </section>
+
+        <section class="live-summary">
+          <div>
+            <span>Sources analyzed</span>
+            <strong id="sideSources">0</strong>
+          </div>
+          <div>
+            <span>Evidence coverage</span>
+            <strong id="sideCoverage">0%</strong>
+          </div>
+          <div>
+            <span>Avg credibility</span>
+            <strong id="sideCredibility">0/10</strong>
+          </div>
+        </section>
+      </aside>
+
+      <section class="results-workbench glass-panel" aria-live="polite">
+        <div id="emptyState" class="empty-state">
+          <div class="ai-orbit">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p class="eyebrow">Evidence intelligence dashboard</p>
+          <h2>Live verdict, sources, evidence, and reasoning will appear here</h2>
+          <p>VeriNova searches the web, retrieves source text, extracts evidence, classifies stance, computes confidence, and explains the result using a transparent NLP pipeline.</p>
+        </div>
+
+        <div id="loadingState" class="loading-state hidden">
+          <div class="scanner">
+            <span></span>
+          </div>
+          <h2>Retrieving and analyzing live evidence</h2>
+          <p>Claim decomposition, source discovery, extraction, stance classification, reliability scoring, and explanation generation are running.</p>
+        </div>
+
+        <div id="resultView" class="result-view hidden">
+          <section class="verdict-layout">
+            <article class="verdict-card">
+              <p class="eyebrow">Verification Result</p>
+              <h2 id="verdictText">Insufficient Evidence</h2>
+              <p id="statusText">No claim analyzed yet</p>
+              <div class="verdict-tags" id="verdictTags"></div>
+            </article>
+
+            <article class="confidence-card">
+              <div class="confidence-gauge" id="confidenceGauge">
+                <span id="confidenceValue">N/A</span>
+                <small>confidence</small>
+              </div>
+              <div>
+                <p class="micro-label">Evidence agreement</p>
+                <strong id="agreementValue">0%</strong>
+              </div>
+            </article>
+          </section>
+
+          <section class="pipeline-card">
+            <div class="pipeline-step active"><span>01</span><strong>Claim</strong></div>
+            <div class="pipeline-step"><span>02</span><strong>Search</strong></div>
+            <div class="pipeline-step"><span>03</span><strong>Retrieve</strong></div>
+            <div class="pipeline-step"><span>04</span><strong>Analyze</strong></div>
+            <div class="pipeline-step"><span>05</span><strong>Verify</strong></div>
+            <div class="pipeline-step"><span>06</span><strong>Explain</strong></div>
+          </section>
+
+          <section class="analytics-grid">
+            <article class="metric-card">
+              <span>Sources analyzed</span>
+              <strong id="sourcesAnalyzed">0</strong>
+            </article>
+            <article class="metric-card">
+              <span>Supporting sources</span>
+              <strong id="supportingSources">0</strong>
+            </article>
+            <article class="metric-card">
+              <span>Contradicting sources</span>
+              <strong id="contradictingSources">0</strong>
+            </article>
+            <article class="metric-card">
+              <span>Search coverage</span>
+              <strong id="coverageScore">0%</strong>
+            </article>
+            <article class="metric-card">
+              <span>Independent sources</span>
+              <strong id="independentSources">0</strong>
+            </article>
+            <article class="metric-card">
+              <span>Duplicate clusters</span>
+              <strong id="duplicateClusters">0</strong>
+            </article>
+          </section>
+
+          <section class="content-grid">
+            <article class="analysis-card explanation-card">
+              <div class="card-heading">
+                <div>
+                  <p class="eyebrow">AI Explanation</p>
+                  <h3>Reasoning summary</h3>
+                </div>
+              </div>
+              <div id="explanationText" class="reasoning-text"></div>
+            </article>
+
+            <article class="analysis-card decomposition-card">
+              <div class="card-heading">
+                <div>
+                  <p class="eyebrow">Claim Decomposition</p>
+                  <h3>Entities and semantic frame</h3>
+                </div>
+              </div>
+              <div id="claimDecomposition"></div>
+              <div class="mini-section">
+                <p class="micro-label">NLP pipeline stages</p>
+                <div id="nlpStages" class="tag-row"></div>
+              </div>
+            </article>
+
+            <article class="analysis-card chart-card">
+              <div class="card-heading">
+                <div>
+                  <p class="eyebrow">Source Reliability</p>
+                  <h3>Credibility distribution</h3>
+                </div>
+              </div>
+              <div id="reliabilityChart" class="bar-chart"></div>
+            </article>
+
+            <article class="analysis-card chart-card">
+              <div class="card-heading">
+                <div>
+                  <p class="eyebrow">Evidence Stance</p>
+                  <h3>Agreement analytics</h3>
+                </div>
+              </div>
+              <div id="stanceChart" class="stance-chart"></div>
+            </article>
+
+            <article class="analysis-card chart-card">
+              <div class="card-heading">
+                <div>
+                  <p class="eyebrow">Confidence Model</p>
+                  <h3>Formula breakdown</h3>
+                </div>
+              </div>
+              <div id="confidenceBreakdown" class="bar-chart"></div>
+            </article>
+          </section>
+
+          <section class="evidence-columns">
+            <article class="analysis-card">
+              <div class="card-heading">
+                <div>
+                  <p class="eyebrow">Supporting Evidence</p>
+                  <h3>Claims backed by sources</h3>
+                </div>
+              </div>
+              <div id="supportingEvidence"></div>
+            </article>
+
+            <article class="analysis-card">
+              <div class="card-heading">
+                <div>
+                  <p class="eyebrow">Contradicting Evidence</p>
+                  <h3>Claims challenged by sources</h3>
+                </div>
+              </div>
+              <div id="contradictingEvidence"></div>
+            </article>
+          </section>
+
+          <section class="analysis-card source-section">
+            <div class="card-heading">
+              <div>
+                <p class="eyebrow">Source Cards</p>
+                <h3>Citations, stance, reliability, and snippets</h3>
+              </div>
+            </div>
+            <div id="sourceCards" class="source-grid"></div>
+          </section>
+
+          <section class="analysis-card source-list-section">
+            <div class="card-heading">
+              <div>
+                <p class="eyebrow">All Sources Analyzed</p>
+                <h3>Complete source listing</h3>
+              </div>
+            </div>
+            <div id="sourceList" class="source-list"></div>
+          </section>
+
+          <section class="analysis-card diagnostics-section">
+            <div class="card-heading">
+              <div>
+                <p class="eyebrow">Retrieval Diagnostics</p>
+                <h3>Search transparency</h3>
+              </div>
+            </div>
+            <div id="diagnosticsPanel"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>

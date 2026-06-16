@@ -1,0 +1,7 @@
+text,expected_question_type,expected_category,expected_keywords,expected_entities
+Did the WHO declare COVID-19 a pandemic in 2020?,temporal_question,Health,declare|covid|pandemic|2020,WHO|COVID-19|2020
+Where did the Beirut port explosion happen?,location_question,Politics / International Affairs,beirut|port|explosion,Beirut
+Does regular exercise reduce cardiovascular disease risk?,general_question,Health,regular|exercise|reduce|cardiovascular|disease,
+NASA announced a new Moon mission in 2025.,short_claim_or_headline,Science,nasa|moon|mission|2025,NASA|2025
+Pakistan won the cricket tournament final.,short_claim_or_headline,Sports,pakistan|cricket|tournament|final,Pakistan
+The stock market price increased after the company report.,short_claim_or_headline,Business,stock|market|price|company|report,
