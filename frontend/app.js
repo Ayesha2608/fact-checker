@@ -6,6 +6,8 @@ import {
   shouldSubmitOnEnter,
 } from "./flow.mjs";
 
+const API_BASE_URL = "https://verinova.onrender.com";
+
 const state = {
   mode: "general",
   latestResult: null,
@@ -439,12 +441,12 @@ function showResultShell() {
 }
 
 async function apiGet(path) {
-  const response = await fetch(path);
+  const response = await fetch(`${API_BASE_URL}${path}`);
   return parseResponse(response);
 }
 
 async function apiPost(path, payload) {
-  const response = await fetch(path, {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
