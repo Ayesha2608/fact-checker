@@ -6,7 +6,9 @@ import {
   shouldSubmitOnEnter,
 } from "./flow.mjs";
 
-const API_BASE_URL = "https://verinova.onrender.com";
+const API_BASE_URL = ["127.0.0.1", "localhost"].includes(window.location.hostname)
+  ? ""
+  : "https://verinova.onrender.com";
 
 const state = {
   mode: "general",
